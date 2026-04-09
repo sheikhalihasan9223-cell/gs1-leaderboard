@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Leaderboard Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f172a;font-family:'Inter',sans-serif;color:#e2e8f0;min-height:100vh}
+.topbar{background:#1e293b;border-bottom:1px solid #334155;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:20px;font-weight:700;color:#f59e0b}
+.status{font-size:12px;padding:5px 12px;border-radius:20px;font-weight:600}
+.status.online{background:#14532d;color:#4ade80;border:1px solid #16a34a}
+.status.offline{background:#450a0a;color:#f87171;border:1px solid #b91c1c}
+.container{max-width:900px;margin:0 auto;padding:28px 24px}
+.section{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px;margin-bottom:20px}
+.section-title{font-size:13px;font-weight:700;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+input,select{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
+input:focus,select:focus{border-color:#f59e0b}
+.emp-count-wrap{position:relative}
+.emp-count-wrap input{padding-right:80px}
+.emp-auto-badge{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb;border-radius:6px;padding:2px 7px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.emp-auto-badge:hover{background:#2563eb;color:#fff}
+.emp-hint{font-size:11px;color:#475569;margin-top:5px}
+.emp-hint b{color:#f59e0b}
+.upload-zone{border:2px dashed #334155;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:#f59e0b;background:#1a2a0a}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-text{font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:4px}
+.upload-sub{font-size:12px;color:#64748b}
+.preview-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+.preview-table th{background:#0f172a;color:#94a3b8;padding:8px 12px;text-align:left;font-weight:600;border-bottom:1px solid #334155}
+.preview-table td{padding:8px 12px;border-bottom:1px solid #1e293b;color:#e2e8f0}
+.preview-table tr:last-child td{border-bottom:none}
+.preview-table td.name-col{font-family:'Cairo',sans-serif;direction:rtl;font-weight:700}
+.preview-table td.earn-col{font-weight:700;color:#4ade80}
+.preview-table td.zero-col{color:#475569}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.badge-green{background:#14532d;color:#4ade80}
+.badge-gray{background:#1e293b;color:#475569;border:1px solid #334155}
+.btn{padding:12px 24px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:#f59e0b;color:#000;width:100%}
+.btn-primary:hover{background:#d97706}
+.btn-primary:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
+.btn-danger{background:#450a0a;color:#f87171;border:1px solid #b91c1c}
+.btn-danger:hover{background:#7f1d1d}
+.success-bar{background:#14532d;border:1px solid #16a34a;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;display:none}
+.success-bar.show{display:flex}
+.success-bar span{color:#4ade80;font-size:14px;font-weight:600}
+.error-bar{background:#450a0a;border:1px solid #b91c1c;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;display:none}
+.error-bar.show{display:flex}
+.error-bar span{color:#f87171;font-size:14px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-size:24px;font-weight:700;color:#f59e0b}
+.stat-label{font-size:11px;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.col-map{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;margin-bottom:14px}
+.col-map-title{font-size:12px;color:#64748b;margin-bottom:8px;font-weight:600}
+.col-map-row{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.col-map-row label{margin:0;min-width:100px;color:#94a3b8}
+.col-map-row select{flex:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">⚡ Leaderboard Admin</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b">
+      <div class="live-dot"></div>
+      Live sync active
+    </div>
+    <div class="status online" id="conn-status">● Connected</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="success-bar" id="success-bar">
+    <span>✅ <span id="success-msg">Leaderboard updated successfully!</span></span>
+  </div>
+  <div class="error-bar" id="error-bar">
+    <span>❌ <span id="error-msg">Error occurred</span></span>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="section">
+    <div class="section-title">⚙️ Display Settings</div>
+    <div class="grid4">
+      <div>
+        <label>Month</label>
+        <select id="sel-month">
+          <option>January</option><option>February</option><option>March</option>
+          <option selected>April</option><option>May</option><option>June</option>
+          <option>July</option><option>August</option><option>September</option>
+          <option>October</option><option>November</option><option>December</option>
+        </select>
+      </div>
+      <div>
+        <label>Year</label>
+        <input type="number" id="sel-year" value="2026" min="2020" max="2099"/>
+      </div>
+      <div>
+        <label>Company Name</label>
+        <input type="text" id="sel-company" value="GS1 Saudi Arabia" placeholder="Company name"/>
+      </div>
+      <div>
+        <label>Total Employees</label>
+        <div class="emp-count-wrap">
+          <input type="number" id="sel-empcount" value="58" min="1" max="9999" placeholder="e.g. 58"/>
+          <span class="emp-auto-badge" onclick="autoFillEmpCount()" title="Auto-fill from uploaded Excel data">↺ Auto</span>
+        </div>
+        <div class="emp-hint">Shown on live display. Click <b>↺ Auto</b> after upload to set from file.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="section">
+    <div class="section-title">📂 Upload Excel File</div>
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" id="file-input" accept=".xlsx,.xls"/>
+      <div class="upload-icon">📊</div>
+      <div class="upload-text">Drop your Excel file here or click to browse</div>
+      <div class="upload-sub">Supports .xlsx and .xls — Column A: Number, Column B: Name (Arabic), Column G: Total</div>
+    </div>
+
+    <!-- Column mapping -->
+    <div class="col-map" id="col-map" style="display:none;margin-top:14px">
+      <div class="col-map-title">Column Mapping — select which columns contain the data</div>
+      <div class="col-map-row">
+        <label>Name column</label>
+        <select id="map-name"></select>
+      </div>
+      <div class="col-map-row">
+        <label>Total Earning</label>
+        <select id="map-total"></select>
+      </div>
+      <div class="col-map-row">
+        <label>Without Tax</label>
+        <select id="map-notax"><option value="-1">— Not used —</option></select>
+      </div>
+      <button class="btn btn-danger" style="margin-top:8px;font-size:12px;padding:8px 14px" onclick="applyMapping()">Apply Mapping ↻</button>
+    </div>
+
+    <div id="preview-wrap" style="display:none;margin-top:14px">
+      <div class="stat-row" id="stats-row"></div>
+      <div style="max-height:320px;overflow-y:auto;border-radius:10px;border:1px solid #334155">
+        <table class="preview-table">
+          <thead><tr><th>#</th><th>Name</th><th>Total (with tax)</th><th>Status</th></tr></thead>
+          <tbody id="preview-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLISH -->
+  <div class="section">
+    <div class="section-title">🚀 Publish to Leaderboard</div>
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px">Click publish to instantly update the live LED display with the uploaded data and settings above.</p>
+    <button class="btn btn-primary" id="publish-btn" onclick="publishData()" disabled>
+      📡 Publish to Live Display
+    </button>
+  </div>
+
+  <!-- CURRENT LIVE -->
+  <div class="section">
+    <div class="section-title"><div class="live-dot"></div> Currently Live</div>
+    <div id="live-info" style="font-size:13px;color:#64748b">Loading current data...</div>
+  </div>
+
+</div>
+
+<script>
+// ── PASTE YOUR FIREBASE CONFIG HERE ──
+const firebaseConfig = {
+  apiKey: "AIzaSyC5hcg2loY4VNzcmNATPIUBCVNTQKGTSro",
+  authDomain: "gs1-leaderboard.firebaseapp.com",
+  projectId: "gs1-leaderboard",
+  storageBucket: "gs1-leaderboard.firebasestorage.app",
+  messagingSenderId: "923262340454",
+  appId: "1:923262340454:web:d9ef6cd46d10fe5fd40ca7",
+  measurementId: "G-E14DR9BZQ8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let parsedData = [];
+let rawHeaders = [];
+let rawRows = [];
+
+// Auto-fill employee count from uploaded data
+function autoFillEmpCount(){
+  if(parsedData.length === 0){
+    alert('Please upload an Excel file first, then click ↺ Auto.');
+    return;
+  }
+  document.getElementById('sel-empcount').value = parsedData.length;
+  document.getElementById('sel-empcount').style.borderColor = '#4ade80';
+  setTimeout(()=>document.getElementById('sel-empcount').style.borderColor='', 2000);
+}
+
+// Upload handler
+document.getElementById('file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  document.getElementById('upload-zone').querySelector('.upload-text').textContent = '✅ ' + file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wb = XLSX.read(ev.target.result, {type:'binary'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    rawRows = XLSX.utils.sheet_to_json(ws, {header:1});
+    rawHeaders = rawRows[0] || [];
+    buildColMap();
+    applyMapping();
+  };
+  reader.readAsBinaryString(file);
+});
+
+function buildColMap(){
+  ['map-name','map-total','map-notax'].forEach(id=>{
+    const sel = document.getElementById(id);
+    const isNotax = id==='map-notax';
+    sel.innerHTML = isNotax ? '<option value="-1">— Not used —</option>' : '';
+    rawHeaders.forEach((h,i)=>{
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `Col ${i+1}: ${String(h||'').substring(0,30)}`;
+      sel.appendChild(opt);
+    });
+  });
+  document.getElementById('map-name').value = 1;
+  document.getElementById('map-total').value = 6;
+  document.getElementById('map-notax').value = 7;
+  document.getElementById('col-map').style.display='block';
+}
+
+function applyMapping(){
+  const nameCol = parseInt(document.getElementById('map-name').value);
+  const totalCol = parseInt(document.getElementById('map-total').value);
+  const notaxCol = parseInt(document.getElementById('map-notax').value);
+
+  parsedData = [];
+  for(let i=1; i<rawRows.length; i++){
+    const row = rawRows[i];
+    const name = row[nameCol];
+    if(!name || String(name).trim()==='') continue;
+    const total = parseFloat(row[totalCol]) || 0;
+    const notax = notaxCol>=0 ? (parseFloat(row[notaxCol]) || 0) : 0;
+    parsedData.push({name: String(name).trim(), total: Math.round(total), noTax: Math.round(notax)});
+  }
+
+  parsedData.sort((a,b)=>b.total-a.total);
+
+  // Auto-update employee count field when file is loaded
+  document.getElementById('sel-empcount').value = parsedData.length;
+
+  renderPreview();
+  document.getElementById('publish-btn').disabled = parsedData.length === 0;
+}
+
+function renderPreview(){
+  if(parsedData.length===0) return;
+  const totalEarn = parsedData.reduce((s,e)=>s+e.total,0);
+  const withEarn = parsedData.filter(e=>e.total>0).length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="stat-val">${parsedData.length}</div><div class="stat-label">Total Employees</div></div>
+    <div class="stat"><div class="stat-val" style="color:#4ade80">${withEarn}</div><div class="stat-label">With Earnings</div></div>
+    <div class="stat"><div class="stat-val">${totalEarn.toLocaleString()} ريال</div><div class="stat-label">Team Total</div></div>`;
+
+  const tbody = document.getElementById('preview-body');
+  tbody.innerHTML = parsedData.map((e,i)=>`
+    <tr>
+      <td style="color:#64748b">${i+1}</td>
+      <td class="name-col">${e.name}</td>
+      <td class="${e.total===0?'zero-col':'earn-col'}">${e.total===0?'٠':e.total.toLocaleString('en-US')} ريال</td>
+      <td>${e.total>0?'<span class="badge badge-green">Active</span>':'<span class="badge badge-gray">No earnings</span>'}</td>
+    </tr>`).join('');
+
+  document.getElementById('preview-wrap').style.display='block';
+}
+
+async function publishData(){
+  const btn = document.getElementById('publish-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Publishing...';
+  try {
+    await db.collection('leaderboard').doc('current').set({
+      employees: parsedData,
+      settings: {
+        month: document.getElementById('sel-month').value,
+        year: document.getElementById('sel-year').value,
+        company: document.getElementById('sel-company').value,
+        totalEmployees: parseInt(document.getElementById('sel-empcount').value) || parsedData.length,
+      },
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    showSuccess(`Published ${parsedData.length} employees to live display!`);
+  } catch(err){
+    showError(err.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '📡 Publish to Live Display';
+}
+
+function showSuccess(msg){
+  document.getElementById('success-msg').textContent = msg;
+  const bar = document.getElementById('success-bar');
+  bar.classList.add('show');
+  setTimeout(()=>bar.classList.remove('show'),4000);
+}
+function showError(msg){
+  document.getElementById('error-msg').textContent = msg;
+  const bar = document.getElementById('error-bar');
+  bar.classList.add('show');
+  setTimeout(()=>bar.classList.remove('show'),6000);
+}
+
+// Live status
+db.collection('leaderboard').doc('current').onSnapshot(doc=>{
+  if(doc.exists){
+    const d = doc.data();
+    const s = d.settings||{};
+    const emps = d.employees||[];
+    const updated = d.updatedAt?.toDate?.()?.toLocaleString('en-GB')||'Unknown';
+    document.getElementById('live-info').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+        <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${s.month||'—'} ${s.year||''}</div><div style="color:#475569;font-size:11px;margin-top:2px">PERIOD</div></div>
+        <div><div style="color:#4ade80;font-weight:700;font-size:16px">${s.totalEmployees||emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EMPLOYEES</div></div>
+        <div><div style="color:#60a5fa;font-weight:700;font-size:16px">${emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">IN LEADERBOARD</div></div>
+        <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${emps.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')} ريال</div><div style="color:#475569;font-size:11px;margin-top:2px">TEAM TOTAL</div></div>
+        <div><div style="color:#94a3b8;font-weight:600;font-size:13px">${updated}</div><div style="color:#475569;font-size:11px;margin-top:2px">LAST UPDATED</div></div>
+      </div>`;
+  } else {
+    document.getElementById('live-info').textContent = 'No data published yet.';
+  }
+}, err=>{
+  document.getElementById('conn-status').textContent = '● Disconnected';
+  document.getElementById('conn-status').className = 'status offline';
+});
+
+// Drag and drop
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('drag')});
+zone.addEventListener('dragleave', ()=>zone.classList.remove('drag'));
+zone.addEventListener('drop', e=>{
+  e.preventDefault();
+  zone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if(file){
+    document.getElementById('file-input').files = e.dataTransfer.files;
+    document.getElementById('file-input').dispatchEvent(new Event('change'));
+  }
+});
+</script>
+</body>
+</html>
