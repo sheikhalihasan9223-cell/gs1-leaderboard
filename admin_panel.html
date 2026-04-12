@@ -21,6 +21,7 @@ body{background:#0f172a;font-family:'Inter',sans-serif;color:#e2e8f0;min-height:
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.grid5{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:14px}
 label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
 input,select{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
 input:focus,select:focus{border-color:#f59e0b}
@@ -110,7 +111,7 @@ input:focus,select:focus{border-color:#f59e0b}
   <!-- SETTINGS -->
   <div class="section">
     <div class="section-title">⚙️ Display Settings</div>
-    <div class="grid4">
+    <div class="grid5">
       <div>
         <label>Month</label>
         <select id="sel-month">
@@ -135,6 +136,11 @@ input:focus,select:focus{border-color:#f59e0b}
           <span class="emp-auto-badge" onclick="autoFillEmpCount()" title="Auto-fill from uploaded Excel data">↺ Auto</span>
         </div>
         <div class="emp-hint">Shown on live display. Click <b>↺ Auto</b> after upload to set from file.</div>
+      </div>
+      <div>
+        <label>Bank Total (SAR)</label>
+        <input type="number" id="sel-banktotal" value="" min="0" placeholder="e.g. 500000"/>
+        <div class="emp-hint">Optional. Leave empty to hide on display.</div>
       </div>
     </div>
   </div>
@@ -363,6 +369,7 @@ async function publishData(){
         year: document.getElementById('sel-year').value,
         company: document.getElementById('sel-company').value,
         totalEmployees: parseInt(document.getElementById('sel-empcount').value) || parsedData.length,
+        bankTotal: parseFloat(document.getElementById('sel-banktotal').value) || 0,
       },
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -395,11 +402,12 @@ db.collection('leaderboard').doc('current').onSnapshot(doc=>{
     const emps = d.employees||[];
     const updated = d.updatedAt?.toDate?.()?.toLocaleString('en-GB')||'Unknown';
     document.getElementById('live-info').innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
         <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${s.month||'—'} ${s.year||''}</div><div style="color:#475569;font-size:11px;margin-top:2px">PERIOD</div></div>
         <div><div style="color:#4ade80;font-weight:700;font-size:16px">${s.totalEmployees||emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EMPLOYEES</div></div>
         <div><div style="color:#60a5fa;font-weight:700;font-size:16px">${emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">IN LEADERBOARD</div></div>
         <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${emps.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')} ريال</div><div style="color:#475569;font-size:11px;margin-top:2px">TEAM TOTAL</div></div>
+        <div><div style="color:#a78bfa;font-weight:700;font-size:16px">${s.bankTotal ? Number(s.bankTotal).toLocaleString('en-US')+' ريال' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">BANK TOTAL</div></div>
         <div><div style="color:#94a3b8;font-weight:600;font-size:13px">${updated}</div><div style="color:#475569;font-size:11px;margin-top:2px">LAST UPDATED</div></div>
       </div>`;
   } else {
