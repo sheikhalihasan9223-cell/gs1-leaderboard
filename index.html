@@ -70,18 +70,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f0f4f8;font-family:
 .emp-card.top3 .emp-photo{border-color:#e3231c}
 
 .emp-info{flex:1}
-.emp-name{font-family:'Cairo',sans-serif;font-size:52px;font-weight:900;direction:rtl;color:#0d1f3c;line-height:1.1}
+.emp-name{font-family:'Cairo',sans-serif;font-size:52px;font-weight:900;direction:rtl;color:#00529b;line-height:1.1}
 .emp-card.zero .emp-name{color:#e3231c}
 .emp-card.top1 .emp-name{color:#b8860b}
 .emp-card.top2 .emp-name{color:#00529b}
 .emp-card.top3 .emp-name{color:#c0392b}
 
 .emp-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-.emp-earn{font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:800;color:#0d1f3c}
+.emp-earn{font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:800;color:#00529b}
 .emp-card.top1 .emp-earn{color:#b8860b}
 .emp-card.top2 .emp-earn{color:#00529b}
 .emp-card.top3 .emp-earn{color:#c0392b}
-.emp-card.zero .emp-earn{color:#c0cdd8}
+.emp-card.zero .emp-earn{color:#e3231c}
 .emp-bar-wrap{width:180px;height:10px;background:#e8eef5;border-radius:99px;overflow:hidden}
 .emp-bar{height:100%;border-radius:99px}
 .medal-icon{font-size:32px}
@@ -273,7 +273,7 @@ function buildSlides(){
       const isZero = e.total === 0;
       const rankClass = isZero ? 'zero' : getRankClass(rank);
       const ci = (rank-1) % COLORS.length;
-      const color = isZero ? '#c0cdd8' : COLORS[ci];
+      const color = isZero ? '#e3231c' : '#00529b';
       const pct = maxE > 0 ? Math.round(e.total / maxE * 100) : 0;
       const photo = photoMap[e.name];
       const medal = getMedal(rank);
