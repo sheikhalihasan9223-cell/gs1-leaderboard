@@ -132,9 +132,21 @@ body::before{
 .slide-area{position:fixed;left:0;right:0;overflow:hidden;padding:16px 44px;display:flex;flex-direction:column;justify-content:center;gap:12px;z-index:5}
 
 /* ── SLIDE ── */
-.slide{opacity:0;transform:translateY(28px) scale(0.98);transition:opacity 0.65s cubic-bezier(.4,0,.2,1),transform 0.65s cubic-bezier(.4,0,.2,1);display:none;flex-direction:column;gap:11px}
-.slide.show{opacity:1;transform:translateY(0) scale(1)}
-.slide.hide{opacity:0;transform:translateY(-28px) scale(0.98)}
+.slide{opacity:0;display:none;flex-direction:column;gap:11px}
+.slide.show{opacity:1}
+.slide.hide{opacity:0}
+.emp-card{transition:none}
+@keyframes cardEnter{
+  0%{opacity:0;transform:scale(0.82) translateY(24px);filter:blur(4px)}
+  60%{opacity:1;transform:scale(1.03) translateY(-3px);filter:blur(0)}
+  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}
+}
+@keyframes cardExit{
+  0%{opacity:1;transform:scale(1) translateY(0)}
+  100%{opacity:0;transform:scale(0.88) translateY(-20px)}
+}
+.card-entering{animation:cardEnter 0.55s cubic-bezier(.22,.68,0,1.2) forwards}
+.card-exiting{animation:cardExit 0.35s ease-in forwards}
 
 /* ── EMPLOYEE CARD ── */
 .emp-card{
@@ -282,8 +294,8 @@ const LANG = {
     monthlyEarnings:'Monthly Earnings',place1:'1st Place',place2:'2nd Place',place3:'3rd Place',
     topPerformers:'✨ Top Performers',currency:' SAR',zero:'0 SAR',dir:'ltr'},
   ar:{title:'🏆 لوحة المتصدرين',employees:'الموظفون',teamTotal:'إجمالي الفريق',bankTotal:'إجمالي البنك',
-    monthlyEarnings:'أرباح الشهر',place1:'1st Place',place2:'2nd Place',place3:'3rd Place',
-    topPerformers:'✨Top Performers',currency:' ريال',zero:'٠ ريال',dir:'rtl'}
+    monthlyEarnings:'أرباح الشهر',place1:'المركز الأول',place2:'المركز الثاني',place3:'المركز الثالث',
+    topPerformers:'✨ أفضل الموظفين',currency:' ريال',zero:'٠ ريال',dir:'rtl'}
 };
 let currentLang='en';
 function T(){return LANG[currentLang];}
@@ -389,14 +401,44 @@ function buildSlides(){
 }
 
 function showPage(page){
+  // Exit current slide — cards fly out
   const prev=document.getElementById('slide-'+currentPage);
-  if(prev){prev.classList.remove('show');prev.classList.add('hide');setTimeout(()=>{prev.classList.remove('hide');prev.style.display='none';},650);}
+  if(prev){
+    const prevCards=[...prev.querySelectorAll('.emp-card')];
+    prevCards.forEach((c,i)=>{
+      c.classList.remove('card-entering');
+      setTimeout(()=>{c.classList.add('card-exiting');},i*40);
+    });
+    setTimeout(()=>{
+      prev.classList.remove('show');
+      prev.style.display='none';
+      prevCards.forEach(c=>c.classList.remove('card-exiting'));
+    },350+prevCards.length*40);
+  }
   document.querySelectorAll('.dot').forEach(d=>d.classList.remove('active'));
   currentPage=page;
   const dot=document.getElementById('dot-'+currentPage);
   if(dot)dot.classList.add('active');
+  // Enter new slide — cards stagger in
   const next=document.getElementById('slide-'+currentPage);
-  if(next){next.style.display='flex';next.style.flexDirection='column';next.style.gap='11px';setTimeout(()=>{next.classList.add('show');},50);}
+  if(next){
+    const delay=prev?400:0;
+    setTimeout(()=>{
+      next.style.display='flex';
+      next.style.flexDirection='column';
+      next.style.gap='11px';
+      next.classList.add('show');
+      const cards=[...next.querySelectorAll('.emp-card')];
+      cards.forEach((c,i)=>{
+        c.style.opacity='0';
+        c.classList.remove('card-entering');
+        setTimeout(()=>{
+          c.style.opacity='';
+          c.classList.add('card-entering');
+        },i*90);
+      });
+    },delay);
+  }
 }
 
 function startSlideshow(){
