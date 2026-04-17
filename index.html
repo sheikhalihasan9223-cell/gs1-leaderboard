@@ -223,6 +223,7 @@ body::before{
   border-top:2px solid var(--gold);
   padding:9px 0;overflow:hidden;z-index:20;
 }
+/* position special bar dynamically via JS */
 .ticker-track{display:flex;gap:0;white-space:nowrap;animation:ticker 80s linear infinite}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .titem{
@@ -269,6 +270,14 @@ body::before{
 <!-- SLIDES -->
 <div class="slide-area" id="slide-area"></div>
 <div class="page-indicator" id="page-indicator"></div>
+
+<!-- SPECIAL BAR -->
+<div class="special-bar" id="special-bar">
+
+  <div class="special-bar-scroll">
+    <div class="special-bar-track" id="special-track"></div>
+  </div>
+</div>
 
 <!-- TICKER -->
 <div class="footer">
@@ -355,7 +364,8 @@ function buildSlides(){
   const earnFz=Math.min(Math.floor(cardH*0.36),48);
   const rankFz=Math.min(Math.floor(cardH*0.46),56);
   area.style.top=(headerH+podiumH)+'px';
-  area.style.bottom=footerH+'px';
+
+  area.style.bottom=document.querySelector('.footer').offsetHeight+'px';
   area.innerHTML='';
   indic.innerHTML='';
   totalPages=Math.ceil(DATA.length/PER_PAGE);
@@ -447,19 +457,46 @@ function startSlideshow(){
   slideTimer=setInterval(()=>{if(!isPaused)showPage((currentPage+1)%totalPages);},5000);
 }
 
+// Special employees — shown only in bottom bar
+const SPECIAL_NAMES=['غلا ال حزام','مي سعيد','محمد الحلياني'];
+
+function renderSpecialBar(allEmployees, t){
+  const special = allEmployees.filter(e => SPECIAL_NAMES.includes(e.name));
+  if(special.length === 0){ document.getElementById('special-bar').style.display='none'; return; }
+  document.getElementById('special-bar').style.display='flex';
+
+  const items = special.map(e=>`
+    <span class="sitem">
+      <span class="sitem-dot"></span>
+      <span class="sitem-name">${e.name}</span>
+      <span class="sitem-earn">${fmtL(e.total)}</span>
+    </span>`).join('');
+  document.getElementById('special-track').innerHTML = items + items;
+}
+
 function renderAll(employees,settings){
-  DATA=employees;currentSettings=settings;
+  // Keep ALL employees for total calculation
+  const allEmployees = employees;
+  // Filter out special names from main leaderboard
+  DATA = employees.filter(e => !SPECIAL_NAMES.includes(e.name));
+  currentSettings=settings;
   const t=T();
-  document.getElementById('emp-count').textContent=settings.totalEmployees||DATA.length;
-  document.getElementById('ttotal').textContent=DATA.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')+t.currency;
+  document.getElementById('emp-count').textContent=settings.totalEmployees||allEmployees.length;
+  document.getElementById('ttotal').textContent=employees.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')+t.currency;
+
   const bval=settings.bankTotal?Number(settings.bankTotal):0;
   document.getElementById('banktotal').textContent=bval>0?bval.toLocaleString('en-US')+t.currency:'--';
   document.getElementById('lbl-banktotal').textContent=t.bankTotal+':';
   if(settings.month||settings.year)
     document.getElementById('header-sub').textContent=(settings.month||'')+' '+(settings.year||'');
   // Ticker
-  const tHTML=DATA.map(e=>`<span class="titem${e.total===0?' tz':''}"><span class="tidot"></span>${e.name}&nbsp;<b>${fmtL(e.total)}</b></span>`).join('');
-  document.getElementById('ticker').innerHTML=tHTML+tHTML;
+  // Show only special 3 in ticker
+  const specialEmps = allEmployees.filter(e => SPECIAL_NAMES.some(n => e.name.trim() === n.trim()));
+  const tickerItems = specialEmps.length > 0
+    ? specialEmps
+    : allEmployees.filter(e => SPECIAL_NAMES.some(n => e.name.includes(n.substring(0,4))));
+  const tHTML = tickerItems.map(e=>`<span class="titem"><span class="tidot"></span>${e.name}&nbsp;<b>${fmtL(e.total)}</b></span>`).join('');
+  document.getElementById('ticker').innerHTML = (tHTML+tHTML) || '<span class="titem">No data</span>';
   renderPodium();
   if(slideTimer)clearInterval(slideTimer);
   setTimeout(()=>{buildSlides();startSlideshow();},200);
