@@ -490,13 +490,10 @@ function renderAll(employees,settings){
   if(settings.month||settings.year)
     document.getElementById('header-sub').textContent=(settings.month||'')+' '+(settings.year||'');
   // Ticker
-  // Show only special 3 in ticker
-  const specialEmps = allEmployees.filter(e => SPECIAL_NAMES.some(n => e.name.trim() === n.trim()));
-  const tickerItems = specialEmps.length > 0
-    ? specialEmps
-    : allEmployees.filter(e => SPECIAL_NAMES.some(n => e.name.includes(n.substring(0,4))));
-  const tHTML = tickerItems.map(e=>`<span class="titem"><span class="tidot"></span>${e.name}&nbsp;<b>${fmtL(e.total)}</b></span>`).join('');
-  document.getElementById('ticker').innerHTML = (tHTML+tHTML) || '<span class="titem">No data</span>';
+  // Show only the 3 special names in ticker
+  const specialEmps = allEmployees.filter(e => SPECIAL_NAMES.includes(e.name.trim()));
+  const tHTML = specialEmps.map(e=>`<span class="titem"><span class="tidot"></span>${e.name}&nbsp;<b>${fmtL(e.total)}</b></span>`).join('');
+  document.getElementById('ticker').innerHTML = tHTML + tHTML;
   renderPodium();
   if(slideTimer)clearInterval(slideTimer);
   setTimeout(()=>{buildSlides();startSlideshow();},200);
