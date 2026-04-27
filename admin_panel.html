@@ -146,6 +146,16 @@ input:focus,select:focus{border-color:#f59e0b}
         <input type="number" id="sel-banktotal" value="" min="0" placeholder="e.g. 500000"/>
         <div class="emp-hint">Optional. Leave empty to hide on display.</div>
       </div>
+      <div>
+        <label>Team Total Override (SAR)</label>
+        <input type="number" id="sel-teamtotal" value="" min="0" placeholder="Auto from Excel"/>
+        <div class="emp-hint">Leave empty to use auto-calculated total from Excel.</div>
+      </div>
+      <div>
+        <label>Total Earning (SAR)</label>
+        <input type="number" id="sel-totalearning" value="" min="0" placeholder="e.g. 1200000"/>
+        <div class="emp-hint">Optional. Leave empty to hide on display.</div>
+      </div>
     </div>
   </div>
 
@@ -374,6 +384,8 @@ async function publishData(){
         company: document.getElementById('sel-company').value,
         totalEmployees: parseInt(document.getElementById('sel-empcount').value) || parsedData.length,
         bankTotal: parseFloat(document.getElementById('sel-banktotal').value) || 0,
+        totalEarning: parseFloat(document.getElementById('sel-totalearning').value) || 0,
+        teamTotalOverride: parseFloat(document.getElementById('sel-teamtotal').value) || 0,
       },
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -406,12 +418,13 @@ db.collection('leaderboard').doc('current').onSnapshot(doc=>{
     const emps = d.employees||[];
     const updated = d.updatedAt?.toDate?.()?.toLocaleString('en-GB')||'Unknown';
     document.getElementById('live-info').innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px">
         <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${s.month||'—'} ${s.year||''}</div><div style="color:#475569;font-size:11px;margin-top:2px">PERIOD</div></div>
         <div><div style="color:#4ade80;font-weight:700;font-size:16px">${s.totalEmployees||emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EMPLOYEES</div></div>
         <div><div style="color:#60a5fa;font-weight:700;font-size:16px">${emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">IN LEADERBOARD</div></div>
         <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${emps.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')} ريال</div><div style="color:#475569;font-size:11px;margin-top:2px">TEAM TOTAL</div></div>
         <div><div style="color:#a78bfa;font-weight:700;font-size:16px">${s.bankTotal ? Number(s.bankTotal).toLocaleString('en-US')+' ريال' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">BANK TOTAL</div></div>
+        <div><div style="color:#34d399;font-weight:700;font-size:16px">${s.totalEarning ? Number(s.totalEarning).toLocaleString('en-US')+' ريال' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EARNING</div></div>
         <div><div style="color:#94a3b8;font-weight:600;font-size:13px">${updated}</div><div style="color:#475569;font-size:11px;margin-top:2px">LAST UPDATED</div></div>
       </div>`;
   } else {
@@ -599,7 +612,7 @@ db.collection('leaderboard').doc('control').onSnapshot(doc => {
 const zone = document.getElementById('upload-zone');
 zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('drag')});
 zone.addEventListener('dragleave', ()=>zone.classList.remove('drag'));
-zone.addEventListener('drop', e=>{
+zone.addEventListener('drop', e=>{s
   e.preventDefault();
   zone.classList.remove('drag');
   const file = e.dataTransfer.files[0];
