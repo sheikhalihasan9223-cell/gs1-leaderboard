@@ -49,28 +49,28 @@ body::before{
 
 /* ── PODIUM ── */
 .podium-bar{position:relative;z-index:9;padding:10px 36px 12px;background:rgba(255,255,255,0.75);backdrop-filter:blur(24px) saturate(160%);border-bottom:1.5px solid rgba(255,255,255,0.5);box-shadow:0 4px 20px rgba(0,20,80,0.08),inset 0 1px 0 rgba(255,255,255,0.9)}
-.podium-label{font-size:9px;letter-spacing:4px;color:#000000;text-align:center;margin-bottom:8px;text-transform:uppercase;font-weight:700}
+.podium-label{font-size:14px;letter-spacing:4px;color:#000000;text-align:center;margin-bottom:8px;text-transform:uppercase;font-weight:700}
 .podium-grid{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:10px;max-width:1100px;margin:0 auto;align-items:end}
 .pod{border-radius:22px;text-align:center;position:relative;overflow:hidden;padding:10px 8px;backdrop-filter:blur(20px) saturate(180%)}
 .pod::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;border-radius:22px 22px 0 0;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0) 100%);pointer-events:none;z-index:1}
-.pod.p1{background:linear-gradient(160deg,rgb(255, 221, 2),rgba(255,200,40,0.3),rgba(200,150,0,0.15));border:1.5px solid rgba(255,220,60,0.65);box-shadow:0 10px 36px rgba(180,140,0,0.22),inset 0 1.5px 0 rgba(255,255,255,0.85);padding:16px 8px}
-.pod.p2{background:linear-gradient(160deg,rgb(0, 133, 249),rgba(100,180,255,0.25),rgba(0,100,220,0.1));border:1.5px solid rgba(120,190,255,0.6);box-shadow:0 6px 28px rgba(0,80,200,0.18),inset 0 1.5px 0 rgba(255,255,255,0.8)}
+.pod.p1{background:linear-gradient(160deg,rgb(255, 221, 0),rgba(255,200,40,0.3),rgba(200,150,0,0.15));border:1.5px solid rgba(255,220,60,0.65);box-shadow:0 10px 36px rgba(180,140,0,0.22),inset 0 1.5px 0 rgba(255,255,255,0.85);padding:16px 8px}
+.pod.p2{background:linear-gradient(160deg,rgb(0, 136, 255),rgba(100,180,255,0.25),rgba(0,100,220,0.1));border:1.5px solid rgba(120,190,255,0.6);box-shadow:0 6px 28px rgba(0,80,200,0.18),inset 0 1.5px 0 rgba(255,255,255,0.8)}
 .pod.p3{background:linear-gradient(160deg,rgb(0, 136, 255),rgba(100,180,255,0.25),rgba(0,100,220,0.1));border:1.5px solid rgba(120,190,255,0.6);box-shadow:0 6px 28px rgba(0,80,200,0.18),inset 0 1.5px 0 rgba(255,255,255,0.8)}
 .pod-medal{font-size:26px;display:block;margin-bottom:5px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.2));position:relative;z-index:2}
 .pod-photo-wrap{position:relative;display:inline-block;margin:0 auto 7px;z-index:2}
 .pod-photo{border-radius:50%;object-fit:cover;display:block;box-shadow:0 6px 22px rgba(0,0,0,0.2)}
 .pod-photo-ph{border-radius:50%;background:rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
 .pod-ring{position:absolute;inset:-5px;border-radius:50%;border:2.5px solid transparent;animation:spinRing 3.5s linear infinite;z-index:0}
-.p1 .pod-photo,.p1 .pod-photo-ph{border:4px solid rgb(0, 0, 0)}
-.p2 .pod-photo,.p2 .pod-photo-ph{border:4px solid rgb(0, 0, 0)}
-.p3 .pod-photo,.p3 .pod-photo-ph{border:4px solid rgb(0, 0, 0)}
-.p1 .pod-ring{border-top-color:rgb(0, 0, 0);border-right-color:rgb(255, 200, 0)}
+.p1 .pod-photo,.p1 .pod-photo-ph{border:4px solid rgb(255, 200, 0)}
+.p2 .pod-photo,.p2 .pod-photo-ph{border:4px solid rgb(0, 132, 255)}
+.p3 .pod-photo,.p3 .pod-photo-ph{border:4px solid rgb(0, 132, 255)}
+.p1 .pod-ring{border-top-color:rgb(0, 0, 0);border-right-color:rgb(253, 198, 0)}
 .p2 .pod-ring{border-top-color:rgb(0, 0, 0);border-right-color:rgb(0, 132, 255)}
 .p3 .pod-ring{border-top-color:rgb(0, 0, 0);border-right-color:rgb(0, 132, 255)}
 @keyframes spinRing{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .pod-lbl{font-size:9px;letter-spacing:2px;color:#000000;text-transform:uppercase;font-weight:700;margin-bottom:2px;position:relative;z-index:2}
 .pod-name{font-family:'Cairo',sans-serif;font-weight:900;direction:rtl;margin-bottom:3px;position:relative;z-index:2}
-.p1 .pod-name{color:#000000;font-size:18px} .p2 .pod-name{color:#000000;font-size:15px} .p3 .pod-name{color:#003a8c;font-size:15px}
+.p1 .pod-name{color:#000000;font-size:18px} .p2 .pod-name{color:#000000;font-size:15px} .p3 .pod-name{color:#000000;font-size:15px}
 .pod-earn{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:800;position:relative;z-index:2}
 .p1 .pod-earn{color:#000000} .p2 .pod-earn{color:#000000} .p3 .pod-earn{color:#000000}
 
@@ -118,19 +118,19 @@ body::before{
 /* Light green 50000-99999 */
 .emp-card.tier-lgreen{background:linear-gradient(135deg,rgba(34,197,94,0.13),rgba(255,255,255,0.7));border:1.5px solid var(--c-lgreen-border)}
 .emp-card.tier-lgreen::before{background:linear-gradient(180deg,#22c55e,#86efac)}
-.emp-card.tier-lgreen .rname{color:#0bba4e}
-.emp-card.tier-lgreen .rearn{color:#0bba4e}
+.emp-card.tier-lgreen .rname{color:#22a153}
+.emp-card.tier-lgreen .rearn{color:#22a153}
 .emp-card.tier-lgreen .rbar{background:linear-gradient(90deg,#22c55e,#86efac)}
 
 /* Green 100000+ */
 .emp-card.tier-green{background:linear-gradient(135deg,rgba(22,163,74,0.15),rgba(255,255,255,0.7));border:1.5px solid var(--c-green-border)}
 .emp-card.tier-green::before{background:linear-gradient(180deg,#16a34a,#4ade80)}
-.emp-card.tier-green .rname{color:#027631}
-.emp-card.tier-green .rearn{color:#027631}
+.emp-card.tier-green .rname{color:#14532d}
+.emp-card.tier-green .rearn{color:#14532d}
 .emp-card.tier-green .rbar{background:linear-gradient(90deg,#16a34a,#4ade80)}
 
 /* Zero earners */
-.emp-card.tier-zero{background:linear-gradient(135deg,rgba(255,255,255,0.55),rgba(240,240,250,0.6));border:1.5px solid rgba(200,210,230,0.5);opacity:0.75}
+.emp-card.tier-zero{background:linear-gradient(135deg,rgba(255,60,60,0.14),rgba(255,255,255,0.7));border:1.5px solid var(--c-red-border)}
 .emp-card.tier-zero::before{background:linear-gradient(180deg,#aab4c8,#ccd4e0)}
 .emp-card.tier-zero .rname{color:#cc0000}
 .emp-card.tier-zero .rearn{color:#cc0000}
@@ -298,7 +298,7 @@ function buildSlides(){
 
   // Set scroll speed based on content height
   const totalH = li.scrollHeight / 2;
-  const speed = Math.max(20, totalH / 35);
+  const speed = Math.max(10, totalH / 80);
   li.style.animationDuration = speed + 's';
   li.style.animationPlayState = isPaused ? 'paused' : 'running';
 }
