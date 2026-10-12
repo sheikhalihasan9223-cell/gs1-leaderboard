@@ -357,14 +357,14 @@ function renderPreview(){
   document.getElementById('stats-row').innerHTML = `
     <div class="stat"><div class="stat-val">${parsedData.length}</div><div class="stat-label">Total Employees</div></div>
     <div class="stat"><div class="stat-val" style="color:#4ade80">${withEarn}</div><div class="stat-label">With Earnings</div></div>
-    <div class="stat"><div class="stat-val">${totalEarn.toLocaleString()} ريال</div><div class="stat-label">Team Total</div></div>`;
+    <div class="stat"><div class="stat-val">${totalEarn.toLocaleString()} ⃁</div><div class="stat-label">Team Total</div></div>`;
 
   const tbody = document.getElementById('preview-body');
   tbody.innerHTML = parsedData.map((e,i)=>`
     <tr>
       <td style="color:#64748b">${i+1}</td>
       <td class="name-col">${e.name}</td>
-      <td class="${e.total===0?'zero-col':'earn-col'}">${e.total===0?'٠':e.total.toLocaleString('en-US')} ريال</td>
+      <td class="${e.total===0?'zero-col':'earn-col'}">${e.total===0?'٠':e.total.toLocaleString('en-US')} ⃁</td>
       <td>${e.total>0?'<span class="badge badge-green">Active</span>':'<span class="badge badge-gray">No earnings</span>'}</td>
     </tr>`).join('');
 
@@ -422,9 +422,9 @@ db.collection('leaderboard').doc('current').onSnapshot(doc=>{
         <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${s.month||'—'} ${s.year||''}</div><div style="color:#475569;font-size:11px;margin-top:2px">PERIOD</div></div>
         <div><div style="color:#4ade80;font-weight:700;font-size:16px">${s.totalEmployees||emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EMPLOYEES</div></div>
         <div><div style="color:#60a5fa;font-weight:700;font-size:16px">${emps.length}</div><div style="color:#475569;font-size:11px;margin-top:2px">IN LEADERBOARD</div></div>
-        <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${emps.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')} ريال</div><div style="color:#475569;font-size:11px;margin-top:2px">TEAM TOTAL</div></div>
-        <div><div style="color:#a78bfa;font-weight:700;font-size:16px">${s.bankTotal ? Number(s.bankTotal).toLocaleString('en-US')+' ريال' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">BANK TOTAL</div></div>
-        <div><div style="color:#34d399;font-weight:700;font-size:16px">${s.totalEarning ? Number(s.totalEarning).toLocaleString('en-US')+' ريال' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EARNING</div></div>
+        <div><div style="color:#f59e0b;font-weight:700;font-size:16px">${emps.reduce((s,e)=>s+e.total,0).toLocaleString('en-US')} ⃁</div><div style="color:#475569;font-size:11px;margin-top:2px">TEAM TOTAL</div></div>
+        <div><div style="color:#a78bfa;font-weight:700;font-size:16px">${s.bankTotal ? Number(s.bankTotal).toLocaleString('en-US')+' ⃁' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">BANK TOTAL</div></div>
+        <div><div style="color:#34d399;font-weight:700;font-size:16px">${s.totalEarning ? Number(s.totalEarning).toLocaleString('en-US')+' ⃁' : '—'}</div><div style="color:#475569;font-size:11px;margin-top:2px">TOTAL EARNING</div></div>
         <div><div style="color:#94a3b8;font-weight:600;font-size:13px">${updated}</div><div style="color:#475569;font-size:11px;margin-top:2px">LAST UPDATED</div></div>
       </div>`;
   } else {
