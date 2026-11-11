@@ -230,7 +230,8 @@ function fmtL(n){ return RIYAL + (n===0 ? '0' : n.toLocaleString('en-US')); }
 function displayName(n){return(currentLang==='en'&&engNameMap[n])?engNameMap[n]:n;}
 
 let DATA=[], photoMap={}, engNameMap={}, currentSettings={}, currentAllEmployees=[], isPaused=false;
-const SPECIAL_NAMES=['غلا ال حزام','مي سعيد','محمد الحلياني','هدى الجلعود', 'استقطاب المركز'];
+const SPECIAL_NAMES=['غلا ال حزام','مي سعيد','محمد الحلياني','هدى الجلعود', 'استقطاب المركز','ناصر ال مسعود','عبدالرحمن عبدالوهاب','احمد الواهبي','سعد خالد','شامخ محمد','سعد عائض','مدي خالد
+'];
 const PER_PAGE = 5;
 let currentPage = 0, totalPages = 0, slideTimer = null;
 
