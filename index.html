@@ -150,7 +150,8 @@ body::before{
 .rearn,.pod-earn,.titem b{direction:ltr;unicode-bidi:isolate}
 
 /* ── FOOTER ── */
-.footer{position:fixed;direction:ltr;bottom:0;left:0;right:0;background:linear-gradient(90deg,#00529b 0%,#003f7a 50%,#00529b 100%);border-top:2px solid var(--gold);padding:9px 0;overflow:hidden;z-index:20;box-shadow:0 -4px 20px rgba(0,30,80,0.2)}.ticker-track{display:flex;gap:0;white-space:nowrap;width:max-content;direction:ltr;animation:ticker linear infinite;will-change:transform}
+.footer{position:fixed;direction:ltr;bottom:0;left:0;right:0;background:linear-gradient(90deg,#00529b 0%,#003f7a 50%,#00529b 100%);border-top:2px solid var(--gold);padding:9px 0;overflow:hidden;z-index:20;box-shadow:0 -4px 20px rgba(0,30,80,0.2)}
+.ticker-track{display:flex;gap:0;white-space:nowrap;width:max-content;direction:ltr;animation:ticker linear infinite;will-change:transform}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .titem{font-size:18px;color:rgba(255,255,255,0.9);flex-shrink:0;font-family:'Cairo',sans-serif;padding:0 30px;border-right:1px solid rgba(255,255,255,0.15);display:inline-flex;align-items:center;gap:10px}
 .titem b{color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;text-shadow:0 0 10px rgba(245,200,66,0.5)}
@@ -224,7 +225,13 @@ function displayName(n){return(currentLang==='en'&&engNameMap[n])?engNameMap[n]:
 let DATA=[], photoMap={}, engNameMap={}, currentSettings={}, currentAllEmployees=[], isPaused=false;
 
 // Footer names (default list, replaced live by the Admin Panel list from Firebase)
-let SPECIAL_NAMES=['غلا ال حزام','مي سعيد','محمد الحلياني','هدى الجلعود','استقطاب المركز','ناصر ال مسعود','عبدالرحمن عبدالوهاب','احمد الواهبي','سعد خالد','شامخ محمد','سعد عائض','مدي خالد'];
+let SPECIAL_NAMES=['غلا ال حزام','مي سعيد','محمد الحلياني','هدى الجلعود','استقطاب المركز'];
+
+// Names that show a headset icon after the name (stay in the main list)
+const HEADSET_NAMES=['ناصر ال مسعود','عبدالرحمن عبدالوهاب','احمد الواهبي','سعد خالد','شامخ محمد','سعد عائض','مدي خالد'];
+function nameWithIcon(e){
+  return displayName(e.name) + (HEADSET_NAMES.includes(e.name.trim()) ? ' 🎧' : '');
+}
 
 const PER_PAGE = 10;
 let currentPage = 0, totalPages = 0, slideTimer = null;
@@ -275,7 +282,7 @@ function buildSlides(){
           : `<div class="emp-photo-placeholder" style="width:${photoSz}px;height:${photoSz}px;font-size:${Math.floor(photoSz*0.4)}px">👤</div>`
         }
         <div class="emp-info">
-          <div class="rname" style="font-size:${nameFz}px">${displayName(e.name)}</div>
+          <div class="rname" style="font-size:${nameFz}px">${nameWithIcon(e)}</div>
         </div>
         <div class="emp-right">
           <div style="display:flex;align-items:center;gap:8px">
@@ -328,7 +335,7 @@ function renderPodium(){
         <div class="pod-ring"></div>
       </div>
       <div class="pod-lbl">${plbls[i]}</div>
-      <div class="pod-name">${displayName(e.name)}</div>
+      <div class="pod-name">${nameWithIcon(e)}</div>
       <div class="pod-earn">${fmtL(e.total)}</div>
     </div>`;
   }).join('');
